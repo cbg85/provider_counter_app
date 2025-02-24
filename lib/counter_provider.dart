@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
 
-class AgeProvider extends ChangeNotifier {
-  double _age = 0; // Age starts at 0
+class CounterProvider extends ChangeNotifier {
+  int _age = 0;
 
-  double get age => _age;
+  int get age => _age;
 
-  void setAge(double newAge) {
+  void setAge(int newAge) {
     _age = newAge;
     notifyListeners();
+  }
+
+  // Function to determine background color
+  Color getBackgroundColor() {
+    if (_age <= 33) {
+      return Colors.green;
+    } else if (_age <= 67) {
+      return Colors.yellow;
+    } else {
+      return Colors.red;
+    }
   }
 }

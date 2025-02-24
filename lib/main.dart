@@ -1,87 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'counter_provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => CounterProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AgeProvider(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: AgeScreen(),
-      ),
+    return MaterialApp(
+      home: AgeScreen(),
     );
-  }
-}
-
-class AgeProvider extends ChangeNotifier {
-  double _age = 0; // Age starts at 0
-
-  double get age => _age;
-
-  void setAge(double newAge) {
-    _age = newAge;
-    notifyListeners();
   }
 }
 
 class AgeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ageProvider = Provider.of<AgeProvider>(context);
+    final counterProvider = Provider.of<CounterProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Age Slider & Progress Bar')),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
+      backgroundColor: counterProvider.getBackgroundColor(), // Change background color
+      appBar: AppBar(title: Text("Age Slider")),
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Age: ${ageProvider.age.toInt()}',
+              "Age: ${counterProvider.age}",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
-
-            // Age Slider
             Slider(
-              value: ageProvider.age,
+              value: counterProvider.age.toDouble(),
               min: 0,
               max: 99,
               divisions: 99,
-              label: ageProvider.age.toInt().toString(),
+              label: "${counterProvider.age}",
               onChanged: (value) {
-                ageProvider.setAge(value);
+                counterProvider.setAge(value.toInt()); // Update age
               },
-            ),
-
-            SizedBox(height: 20),
-
-            // Progress Bar with Color Change
-            LinearProgressIndicator(
-              value: ageProvider.age / 99,
-              backgroundColor: Colors.grey[300],
-              color: _getProgressColor(ageProvider.age),
-              minHeight: 20,
             ),
           ],
         ),
       ),
     );
-  }
-
-  // Function to determine progress bar color
-  Color _getProgressColor(double age) {
-    if (age <= 33) {
-      return Colors.green;
-    } else if (age <= 67) {
-      return Colors.yellow;
-    } else {
-      return Colors.red;
-    }
   }
 }
