@@ -56,7 +56,7 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Counter App')),
+      appBar: AppBar(title: const Text('Flutter Counter App')),
       body: Consumer<Counter>(
         builder: (context, counter, child) {
           return Container(
@@ -102,19 +102,19 @@ class MyHomePage extends StatelessWidget {
 
   // Function to determine background color based on age
   Color _getBackgroundColor(int age) {
-    if (age <= 12) return Colors.lightBlue;
-    if (age <= 19) return Colors.lightGreen;
-    if (age <= 30) return Colors.yellow.shade200;
-    if (age <= 50) return Colors.orange;
-    return Colors.grey.shade400;
+    if (age >= 0 && age <= 12) return Colors.lightBlue; // Child
+    if (age >= 13 && age <= 19) return Colors.lightGreen; // Teenager
+    if (age >= 20 && age <= 30) return Colors.yellow.shade200; // Young Adult
+    if (age >= 31 && age <= 50) return Colors.orange; // Adult
+    return Colors.grey.shade400; // Golden Years (51+)
   }
 
   // Function to get message based on age
   String _getMessage(int age) {
-    if (age <= 12) return "You're a child!";
-    if (age <= 19) return "Teenager time!";
-    if (age <= 30) return "You're a young adult!";
-    if (age <= 50) return "You're an adult now!";
-    return "Golden years!";
+    if (age >= 0 && age <= 12) return "You're a child!";
+    if (age >= 13 && age <= 19) return "Teenager time!";
+    if (age >= 20 && age <= 30) return "You're a young adult!";
+    if (age >= 31 && age <= 50) return "You're an adult now!";
+    return "Golden years!"; // Age 51+
   }
 }
