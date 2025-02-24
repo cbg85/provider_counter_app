@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 
-class Counter with ChangeNotifier {
-  int value = 0;
+class AgeProvider extends ChangeNotifier {
+  double _age = 0; // Age starts at 0
 
-  void increment() {
-    value += 1;
+  double get age => _age;
+
+  void setAge(double newAge) {
+    _age = newAge;
     notifyListeners();
-  }
-
-  void decrement() {
-    if (value > 0) {
-      value -= 1;
-      notifyListeners();
-    }
   }
 }

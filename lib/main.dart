@@ -1,120 +1,87 @@
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:window_size/window_size.dart';
-import 'counter_provider.dart';
 
 void main() {
-  setupWindow();
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => Counter(),
-      child: const MyApp(),
-    ),
-  );
-}
-
-const double windowWidth = 360;
-const double windowHeight = 640;
-
-void setupWindow() {
-  if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-    WidgetsFlutterBinding.ensureInitialized();
-    setWindowTitle('Provider Counter');
-    setWindowMinSize(const Size(windowWidth, windowHeight));
-    setWindowMaxSize(const Size(windowWidth, windowHeight));
-    getCurrentScreen().then((screen) {
-      setWindowFrame(Rect.fromCenter(
-        center: screen!.frame.center,
-        width: windowWidth,
-        height: windowHeight,
-      ));
-    });
-  }
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Counter',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (context) => AgeProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: AgeScreen(),
       ),
-      home: const MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+class AgeProvider extends ChangeNotifier {
+  double _age = 0; // Age starts at 0
 
+  double get age => _age;
+
+  void setAge(double newAge) {
+    _age = newAge;
+    notifyListeners();
+  }
+}
+
+class AgeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final ageProvider = Provider.of<AgeProvider>(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Flutter Counter App')),
-      body: Consumer<Counter>(
-        builder: (context, counter, child) {
-          return Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: _getBackgroundColor(counter.value),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('Your Age:', style: TextStyle(fontSize: 20)),
-                Text(
-                  '${counter.value}',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                Text(
-                  _getMessage(counter.value),
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FloatingActionButton(
-                      onPressed: counter.increment,
-                      tooltip: 'Increment',
-                      child: const Icon(Icons.add),
-                    ),
-                    const SizedBox(width: 20),
-                    FloatingActionButton(
-                      onPressed: counter.decrement,
-                      tooltip: 'Decrement',
-                      child: const Icon(Icons.remove),
-                    ),
-                  ],
-                ),
-              ],
+      appBar: AppBar(title: Text('Age Slider & Progress Bar')),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Age: ${ageProvider.age.toInt()}',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-          );
-        },
+            SizedBox(height: 20),
+
+            // Age Slider
+            Slider(
+              value: ageProvider.age,
+              min: 0,
+              max: 99,
+              divisions: 99,
+              label: ageProvider.age.toInt().toString(),
+              onChanged: (value) {
+                ageProvider.setAge(value);
+              },
+            ),
+
+            SizedBox(height: 20),
+
+            // Progress Bar with Color Change
+            LinearProgressIndicator(
+              value: ageProvider.age / 99,
+              backgroundColor: Colors.grey[300],
+              color: _getProgressColor(ageProvider.age),
+              minHeight: 20,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // Function to determine background color based on age
-  Color _getBackgroundColor(int age) {
-    if (age >= 0 && age <= 12) return Colors.lightBlue; // Child
-    if (age >= 13 && age <= 19) return Colors.lightGreen; // Teenager
-    if (age >= 20 && age <= 30) return Colors.yellow.shade200; // Young Adult
-    if (age >= 31 && age <= 50) return Colors.orange; // Adult
-    return Colors.grey.shade400; // Golden Years (51+)
-  }
-
-  // Function to get message based on age
-  String _getMessage(int age) {
-    if (age >= 0 && age <= 12) return "You're a child!";
-    if (age >= 13 && age <= 19) return "Teenager time!";
-    if (age >= 20 && age <= 30) return "You're a young adult!";
-    if (age >= 31 && age <= 50) return "You're an adult now!";
-    return "Golden years!"; // Age 51+
+  // Function to determine progress bar color
+  Color _getProgressColor(double age) {
+    if (age <= 33) {
+      return Colors.green;
+    } else if (age <= 67) {
+      return Colors.yellow;
+    } else {
+      return Colors.red;
+    }
   }
 }
